@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Електронски дневник</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 1.3em; margin-bottom: 5px; }
+        .header p { font-size: 0.85em; opacity: 0.95; }
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: #2d3748;
+        }
+        .tab.active {
+            background: #f7fafc;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        .content { 
+            padding: 20px;
+            background: white;
+            min-height: calc(100vh - 150px);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-full {
+            width: 100%;
+            padding: 15px;
+            font-size: 15px;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-box h2 { font-size: 2.5em; margin-bottom: 5px; }
+        .stat-box p { font-size: 0.9em; opacity: 0.95; }
+        .student-list-simple {
+            background: white;
+        }
+        .student-item {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .student-item:hover {
+            background: #f7fafc;
+        }
+        .student-item-info {
+            flex: 1;
+        }
+        .student-item h4 {
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+        .student-item p {
+            font-size: 13px;
+            color: #718096;
+        }
+        .student-item-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .progress-list {
+            margin-top: 20px;
+        }
+        .progress-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            margin: 8px 0;
+            background: #f7fafc;
+            border-radius: 6px;
+            border-left: 3px solid #cbd5e0;
+        }
+        .progress-item.completed {
+            background: #e6fffa;
+            border-left-color: #48bb78;
+        }
+        .progress-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 2px;
+        }
+        .progress-item-content {
+            flex: 1;
+        }
+        .progress-item-text {
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        .progress-item-date {
+            font-size: 12px;
+            color: #718096;
+        }
+        .time-selector {
+            margin-top: 8px;
+        }
+        .time-selector select {
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .attendance-table th {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .attendance-table td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+        }
+        .attendance-table tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        .date-cell {
+            background: #e6fffa;
+            text-align: center;
+            font-size: 12px;
+        }
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        .schedule-header {
+            background: #667eea;
+            color: white;
+            padding: 12px 5px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 12px;
+        }
+        .schedule-time {
+            background: #2d3748;
+            color: white;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .schedule-cell {
+            background: white;
+            padding: 8px 4px;
+            min-height: 80px;
+            cursor: pointer;
+        }
+        .schedule-cell:hover { background: #edf2f7; }
+        .student-slot {
+            background: #e6fffa;
+            padding: 6px;
+            border-radius: 4px;
+            margin: 3px 0;
+            font-size: 11px;
+            border-left: 3px solid #38b2ac;
+            cursor: pointer;
+        }
+        .student-slot.present { 
+            background: rgba(72, 187, 120, 0.3); 
+            border-left-color: #48bb78;
+        }
+        .student-slot.absent { 
+            background: rgba(245, 101, 101, 0.3);
+            border-left-color: #f56565;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .checkbox-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .checkbox-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f7fafc;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .week-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Електронски дневник</h1>
+        <p>Кабинет за слух, говор, глас, алтернатива и аугментативна комуникација</p>
+        <p>Систем за управување ученици со неделен распоред на третмани и напредокот во оперативниот план</p>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab" onclick="switchTab('students')">Студенти</button>
+        <button class="tab" onclick="switchTab('schedule')">Распоред</button>
+        <button class="tab active" onclick="switchTab('progress')">Напредок</button>
+        <button class="tab" onclick="switchTab('plans')">Планови</button>
+        <button class="tab" onclick="switchTab('data')">Податоци</button>
+    </div>
+    
+    <div class="content">
+        <!-- Students Tab -->
+        <div id="students" class="tab-content">
+            <button class="btn btn-primary btn-full" onclick="showAddStudentModal()">+ Додади Студент</button>
+            
+            <div class="stats-row">
+                <div class="stat-box">
+                    <h2 id="totalStudents">0</h2>
+                    <p>Вкупно Студенти</p>
+                </div>
+                <div class="stat-box">
+                    <h2 id="weekSessions">0</h2>
+                    <p>Сесии Неделно</p>
+                </div>
+            </div>
+            
+            <div id="studentListSimple" class="student-list-simple"></div>
+        </div>
+        
+        <!-- Schedule Tab -->
+        <div id="schedule" class="tab-content">
+            <div class="week-nav">
+                <button class="btn btn-primary" onclick="changeWeek(-1)">← Претходна</button>
+                <h3 id="weekDisplay"></h3>
+                <button class="btn btn-primary" onclick="changeWeek(1)">Следна →</button>
+            </div>
+            <button class="btn btn-success" onclick="manualSave()">Зачувај</button>
+            <button class="btn btn-primary" onclick="showMonthlyAttendance()">Избриши</button>
+            <div id="scheduleGrid"></div>
+        </div>
+        
+        <!-- Progress Tab -->
+        <div id="progress" class="tab-content active">
+            <div class="section-header">Следење на Напредок</div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <button class="btn btn-primary btn-full" onclick="switchProgressView('student')">По Студент</button>
+                <button class="btn btn-success btn-full" onclick="switchProgressView('monthly')">Месечен</button>
+            </div>
+            
+            <div id="studentProgressView">
+                <div class="form-group">
+                    <label>Избери Студент:</label>
+                    <select id="progressStudentSelect" onchange="loadStudentProgress()">
+                        <option value="">-- Избери студент --</option>
+                    </select>
+                </div>
+                <div id="progressActivitiesList" class="progress-list"></div>
+            </div>
+            
+            <div id="monthlyProgressView" style="display: none;">
+                <div class="form-group">
+                    <label>Избери месец:</label>
+                    <input type="month" id="monthSelector" onchange="generateMonthlyAttendance()">
+                </div>
+                <div id="monthlyAttendanceTable"></div>
+            </div>
+        </div>
+        
+        <!-- Plans Tab -->
+        <div id="plans" class="tab-content">
+            <button class="btn btn-primary btn-full" onclick="showAddPlanModal()">+ Креирај План</button>
+            <div id="plansList" style="margin-top: 20px;"></div>
+        </div>
+        
+        <!-- Data Tab -->
+        <div id="data" class="tab-content">
+            <div class="section-header">Експорт / Импорт</div>
+            <button class="btn btn-success btn-full" onclick="exportData()">Експортирај Сè (JSON)</button>
+            <button class="btn btn-primary btn-full" onclick="document.getElementById('importFile').click()">Импортирај JSON</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+        </div>
+    </div>
+    
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px;">Додади Студент</h2>
+            <div class="form-group">
+                <label>Име и Презиме</label>
+                <input type="text" id="studentName" placeholder="пр. Марија Чадамова">
+            </div>
+            <div class="form-group">
+                <label>Одделение</label>
+                <input type="text" id="studentGrade" placeholder="пр. IV-а">
+            </div>
+            <div class="form-group">
+                <label>План</label>
+                <select id="studentPlan"></select>
+            </div>
+            <div class="form-group">
+                <label>Времетраење на сесија (минути)</label>
+                <select id="studentDuration">
+                    <option value="20">20 минути</option>
+                    <option value="40" selected>40 минути</option>
+                    <option value="60">60 минути</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" style="flex: 1;" onclick="saveStudent()">Зачувај</button>
+                <button class="btn" style="flex: 1; background: #718096; color: white;" onclick="closeModal('addStudentModal')">Откажи</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Plan Modal -->
+    <div id="addPlanModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px;">Креирај План</h2>
+            <div class="form-group">
+                <label>Име на План</label>
+                <input type="text" id="planName" placeholder="пр. План 1">
+            </div>
+            <div class="form-group">
+                <label>Активности (една по ред)</label>
+                <textarea id="planActivities" rows="10" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px;"></textarea>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success" style="flex: 1;" onclick="savePlan()">Зачувај</button>
+                <button class="btn" style="flex: 1; background: #718096; color: white;" onclick="closeModal('addPlanModal')">Откажи</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assign Modal -->
+    <div id="assignModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 15px;">Доделете Студенти</h2>
+            <div id="checkboxList" class="checkbox-list"></div>
+            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                <button class="btn btn-success" style="flex: 1;" onclick="assignStudents()">Зачувај</button>
+                <button class="btn" style="flex: 1; background: #718096; color: white;" onclick="closeModal('assignModal')">Откажи</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        var students = [];
+        var schedule = {
+            monday: [[], [], [], [], []],
+            tuesday: [[], [], [], [], []],
+            wednesday: [[], [], [], [], []],
+            thursday: [[], [], [], [], []],
+            friday: [[], [], [], [], []]
+        };
+        var attendance = {};
+        var plans = [];
+        var studentProgress = {};
+        
+        var currentWeek = 0;
+        var editingStudent = null;
+        var currentSlot = null;
+        
+        var days = ['Пон', 'Вто', 'Сре', 'Чет', 'Пет'];
+        var daysEng = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+        var timeSlots = [
+            { label: 'I', time: '08:00-08:40' },
+            { label: 'II', time: '08:45-09:25' },
+            { label: 'III', time: '09:40-10:20' },
+            { label: 'IV', time: '10:25-11:05' },
+            { label: 'V', time: '11:10-11:50' }
+        ];
+        
+        function switchTab(tab) {
+            var tabs = document.querySelectorAll('.tab');
+            var contents = document.querySelectorAll('.tab-content');
+            
+            for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+            for (var i = 0; i < contents.length; i++) contents[i].classList.remove('active');
+            
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+            
+            if (tab === 'students') updateStats();
+            if (tab === 'progress') updateProgressStudentList();
+        }
+        
+        function showAddStudentModal() {
+            updatePlanDropdown();
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentGrade').value = '';
+            document.getElementById('addStudentModal').classList.add('active');
+        }
+        
+        function showAddPlanModal() {
+            document.getElementById('planName').value = '';
+            document.getElementById('planActivities').value = '';
+            document.getElementById('addPlanModal').classList.add('active');
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        
+        function updatePlanDropdown() {
+            var select = document.getElementById('studentPlan');
+            select.innerHTML = '';
+            
+            if (plans.length === 0) {
+                var opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'Нема планови - креирајте план прво';
+                select.appendChild(opt);
+            } else {
+                for (var i = 0; i < plans.length; i++) {
+                    var opt = document.createElement('option');
+                    opt.value = plans[i].id;
+                    opt.textContent = plans[i].name;
+                    select.appendChild(opt);
+                }
+            }
+        }
+        
+        function saveStudent() {
+            var name = document.getElementById('studentName').value.trim();
+            var grade = document.getElementById('studentGrade').value.trim();
+            var planId = parseInt(document.getElementById('studentPlan').value);
+            var duration = parseInt(document.getElementById('studentDuration').value);
+            
+            if (!name || !grade || !planId) {
+                alert('Пополнете ги сите полиња');
+                return;
+            }
+            
+            if (editingStudent !== null) {
+                // Editing existing student
+                students[editingStudent].name = name;
+                students[editingStudent].grade = grade;
+                students[editingStudent].planId = planId;
+                students[editingStudent].duration = duration;
+                editingStudent = null;
+            } else {
+                // Adding new student
+                var newStudent = { id: Date.now(), name: name, grade: grade, planId: planId, duration: duration };
+                students.push(newStudent);
+                studentProgress[newStudent.id] = {};
+                studentProgress[newStudent.id][planId] = [];
+            }
+            
+            saveData();
+            renderStudentListSimple();
+            updateStats();
+            updateProgressStudentList();
+            closeModal('addStudentModal');
+        }
+        
+        function savePlan() {
+            var name = document.getElementById('planName').value.trim();
+            var activitiesText = document.getElementById('planActivities').value.trim();
+            
+            if (!name || !activitiesText) {
+                alert('Пополнете ги сите полиња');
+                return;
+            }
+            
+            var activities = activitiesText.split('\n').map(function(a) { return a.trim(); }).filter(function(a) { return a.length > 0; });
+            plans.push({ id: Date.now(), name: name, activities: activities });
+            
+            saveData();
+            renderPlansList();
+            closeModal('addPlanModal');
+        }
+        
+        function renderStudentListSimple() {
+            var list = document.getElementById('studentListSimple');
+            list.innerHTML = '';
+            
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                var plan = getPlanById(s.planId);
+                var completed = (studentProgress[s.id] && studentProgress[s.id][s.planId]) ? studentProgress[s.id][s.planId].length : 0;
+                var total = plan ? plan.activities.length : 0;
+                
+                // Count weekly sessions for this student
+                var weekSessions = 0;
+                for (var day in schedule) {
+                    for (var t = 0; t < schedule[day].length; t++) {
+                        if (schedule[day][t].indexOf(s.id) !== -1) {
+                            weekSessions++;
+                        }
+                    }
+                }
+                
+                var item = document.createElement('div');
+                item.className = 'student-item';
+                item.innerHTML = '<div class="student-item-info">' +
+                    '<h4>' + s.grade + ' - ' + s.name + '</h4>' +
+                    '<p>План: ' + (plan ? plan.name : 'N/A') + ' | Активности: ' + completed + '/' + total + '</p>' +
+                    '<p style="font-size: 12px; color: #667eea; margin-top: 2px;">Сесии неделно: ' + weekSessions + ' | Времетраење: ' + (s.duration || 40) + ' мин</p>' +
+                    '</div>' +
+                    '<div class="student-item-actions">' +
+                    '<button class="btn btn-primary" style="padding: 8px 15px;" onclick="editStudent(' + i + ')">Измени</button>' +
+                    '<button class="btn btn-danger" style="padding: 8px 15px;" onclick="deleteStudent(' + i + ')">Избриши</button>' +
+                    '</div>';
+                list.appendChild(item);
+            }
+        }
+        
+        function editStudent(idx) {
+            editingStudent = idx;
+            var s = students[idx];
+            updatePlanDropdown();
+            document.getElementById('studentName').value = s.name;
+            document.getElementById('studentGrade').value = s.grade;
+            document.getElementById('studentPlan').value = s.planId;
+            document.getElementById('addStudentModal').classList.add('active');
+        }
+        
+        function deleteStudent(idx) {
+            if (!confirm('Избриши го студентот?')) return;
+            
+            var studentId = students[idx].id;
+            students.splice(idx, 1);
+            
+            // Remove from schedule
+            for (var day in schedule) {
+                for (var i = 0; i < schedule[day].length; i++) {
+                    schedule[day][i] = schedule[day][i].filter(function(sid) { return sid !== studentId; });
+                }
+            }
+            
+            // Remove progress
+            delete studentProgress[studentId];
+            
+            saveData();
+            renderStudentListSimple();
+            updateStats();
+            updateProgressStudentList();
+        }
+        
+        function updateStats() {
+            document.getElementById('totalStudents').textContent = students.length;
+            var totalSessions = 0;
+            for (var day in schedule) {
+                for (var i = 0; i < schedule[day].length; i++) {
+                    totalSessions += schedule[day][i].length;
+                }
+            }
+            document.getElementById('weekSessions').textContent = totalSessions;
+        }
+        
+        function updateProgressStudentList() {
+            var select = document.getElementById('progressStudentSelect');
+            select.innerHTML = '<option value="">-- Избери студент --</option>';
+            
+            for (var i = 0; i < students.length; i++) {
+                var opt = document.createElement('option');
+                opt.value = students[i].id;
+                opt.textContent = students[i].grade + ' - ' + students[i].name;
+                select.appendChild(opt);
+            }
+        }
+        
+        function loadStudentProgress() {
+            var studentId = parseInt(document.getElementById('progressStudentSelect').value);
+            var container = document.getElementById('progressActivitiesList');
+            container.innerHTML = '';
+            
+            if (!studentId) return;
+            
+            var student = getStudentById(studentId);
+            if (!student) return;
+            
+            var plan = getPlanById(student.planId);
+            if (!plan) {
+                container.innerHTML = '<p>Студентот нема доделен план</p>';
+                return;
+            }
+            
+            var completed = (studentProgress[studentId] && studentProgress[studentId][student.planId]) ? studentProgress[studentId][student.planId] : [];
+            
+            for (var i = 0; i < plan.activities.length; i++) {
+                var activityData = null;
+                for (var j = 0; j < completed.length; j++) {
+                    if (completed[j].index === i) {
+                        activityData = completed[j];
+                        break;
+                    }
+                }
+                
+                var isCompleted = activityData !== null;
+                var item = document.createElement('div');
+                item.className = 'progress-item' + (isCompleted ? ' completed' : '');
+                
+                var timestampText = '';
+                if (isCompleted && activityData.date && activityData.time) {
+                    var dateParts = activityData.date.split('-');
+                    var formattedDate = dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0];
+                    timestampText = 'Завршено на: ' + formattedDate + ' ' + activityData.time;
+                } else if (isCompleted) {
+                    timestampText = 'Завршено';
+                } else {
+                    timestampText = 'Не е завршено';
+                }
+                
+                item.innerHTML = '<input type="checkbox" ' + (isCompleted ? 'checked' : '') + ' disabled>' +
+                    '<div class="progress-item-content">' +
+                    '<div class="progress-item-text">' + (i + 1) + '. ' + plan.activities[i] + '</div>' +
+                    '<div class="progress-item-date">' + timestampText + '</div>' +
+                    '</div>';
+                container.appendChild(item);
+            }
+        }
+        
+        function getActivityDate(studentId, activityIndex) {
+            var student = getStudentById(studentId);
+            if (!student) return 'N/A';
+            
+            var completed = (studentProgress[studentId] && studentProgress[studentId][student.planId]) ? studentProgress[studentId][student.planId] : [];
+            
+            for (var i = 0; i < completed.length; i++) {
+                if (completed[i].index === activityIndex) {
+                    if (completed[i].date && completed[i].time) {
+                        var dateParts = completed[i].date.split('-');
+                        return dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0] + ' ' + completed[i].time;
+                    }
+                    return 'Завршено';
+                }
+            }
+            
+            return 'N/A';
+        }
+        
+        function switchProgressView(view) {
+            if (view === 'student') {
+                document.getElementById('studentProgressView').style.display = 'block';
+                document.getElementById('monthlyProgressView').style.display = 'none';
+            } else {
+                document.getElementById('studentProgressView').style.display = 'none';
+                document.getElementById('monthlyProgressView').style.display = 'block';
+                setCurrentMonth();
+            }
+        }
+        
+        function setCurrentMonth() {
+            var now = new Date();
+            document.getElementById('monthSelector').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+            generateMonthlyAttendance();
+        }
+        
+        function generateMonthlyAttendance() {
+            var monthValue = document.getElementById('monthSelector').value;
+            if (!monthValue) return;
+            
+            var parts = monthValue.split('-');
+            var year = parseInt(parts[0]);
+            var month = parseInt(parts[1]);
+            
+            var container = document.getElementById('monthlyAttendanceTable');
+            var html = '<table class="attendance-table">';
+            html += '<tr><th>Студент</th><th>План</th>';
+            
+            // Get all dates in month
+            var lastDay = new Date(year, month, 0).getDate();
+            for (var day = 1; day <= lastDay; day++) {
+                html += '<th>' + day + '</th>';
+            }
+            html += '</tr>';
+            
+            // For each student
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                var plan = getPlanById(s.planId);
+                html += '<tr><td>' + s.grade + ' - ' + s.name + '</td><td>' + (plan ? plan.name : 'N/A') + '</td>';
+                
+                for (var day = 1; day <= lastDay; day++) {
+                    var dateStr = year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                    var hasAttendance = checkAttendanceForDate(s.id, dateStr);
+                    html += '<td class="' + (hasAttendance ? 'date-cell' : '') + '">' + (hasAttendance ? '✓' : '') + '</td>';
+                }
+                html += '</tr>';
+            }
+            
+            html += '</table>';
+            container.innerHTML = html;
+        }
+        
+        function checkAttendanceForDate(studentId, dateStr) {
+            if (!attendance[dateStr]) return false;
+            if (!attendance[dateStr][studentId]) return false;
+            
+            for (var key in attendance[dateStr][studentId]) {
+                if (attendance[dateStr][studentId][key].status === 'present') return true;
+            }
+            return false;
+        }
+        
+        function renderPlansList() {
+            var container = document.getElementById('plansList');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < plans.length; i++) {
+                var p = plans[i];
+                var div = document.createElement('div');
+                div.style.cssText = 'background: #f7fafc; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #667eea;';
+                div.innerHTML = '<h4 style="margin-bottom: 10px;">' + p.name + ' (' + p.activities.length + ' активности)</h4>' +
+                    '<button class="btn btn-danger" onclick="deletePlan(' + i + ')">Избриши</button>';
+                container.appendChild(div);
+            }
+        }
+        
+        function deletePlan(idx) {
+            if (!confirm('Избриши го планот?')) return;
+            plans.splice(idx, 1);
+            saveData();
+            renderPlansList();
+        }
+        
+        function getStudentById(id) {
+            for (var i = 0; i < students.length; i++) {
+                if (students[i].id === id) return students[i];
+            }
+            return null;
+        }
+        
+        function getPlanById(id) {
+            for (var i = 0; i < plans.length; i++) {
+                if (plans[i].id === id) return plans[i];
+            }
+            return null;
+        }
+        
+        function changeWeek(dir) {
+            currentWeek += dir;
+            renderSchedule();
+            updateWeekDisplay();
+        }
+        
+        function getWeekKey() {
+            var now = new Date();
+            now.setDate(now.getDate() + (currentWeek * 7));
+            var monday = new Date(now);
+            monday.setDate(now.getDate() - now.getDay() + 1);
+            return monday.toISOString().split('T')[0];
+        }
+        
+        function updateWeekDisplay() {
+            var now = new Date();
+            now.setDate(now.getDate() + (currentWeek * 7));
+            var monday = new Date(now);
+            monday.setDate(now.getDate() - now.getDay() + 1);
+            var friday = new Date(monday);
+            friday.setDate(monday.getDate() + 4);
+            
+            document.getElementById('weekDisplay').textContent = 
+                monday.getDate() + '.' + (monday.getMonth()+1) + '.' + monday.getFullYear() + ' - ' + 
+                friday.getDate() + '.' + (friday.getMonth()+1) + '.' + friday.getFullYear();
+        }
+        
+        function renderSchedule() {
+            var grid = document.getElementById('scheduleGrid');
+            grid.innerHTML = '';
+            grid.className = 'schedule-grid';
+            
+            // Calculate the actual week dates
+            var now = new Date();
+            now.setDate(now.getDate() + (currentWeek * 7));
+            var monday = new Date(now);
+            monday.setDate(now.getDate() - now.getDay() + 1);
+            
+            var headerTime = document.createElement('div');
+            headerTime.className = 'schedule-header';
+            headerTime.textContent = 'Час';
+            grid.appendChild(headerTime);
+            
+            for (var i = 0; i < days.length; i++) {
+                var headerDay = document.createElement('div');
+                headerDay.className = 'schedule-header';
+                headerDay.textContent = days[i];
+                grid.appendChild(headerDay);
+            }
+            
+            for (var t = 0; t < timeSlots.length; t++) {
+                var time = timeSlots[t];
+                var timeCell = document.createElement('div');
+                timeCell.className = 'schedule-time';
+                timeCell.innerHTML = time.label + '<br>' + time.time;
+                grid.appendChild(timeCell);
+                
+                for (var d = 0; d < daysEng.length; d++) {
+                    var day = daysEng[d];
+                    var cell = document.createElement('div');
+                    cell.className = 'schedule-cell';
+                    cell.dataset.day = day;
+                    cell.dataset.time = t;
+                    
+                    // Calculate actual date for this cell
+                    var cellDate = new Date(monday);
+                    cellDate.setDate(monday.getDate() + d);
+                    var dateStr = cellDate.toISOString().split('T')[0];
+                    
+                    var studentIds = schedule[day][t];
+                    for (var s = 0; s < studentIds.length; s++) {
+                        var sid = studentIds[s];
+                        var student = getStudentById(sid);
+                        
+                        if (student) {
+                            var slot = document.createElement('div');
+                            slot.className = 'student-slot';
+                            slot.dataset.sid = sid;
+                            
+                            var key = day + '-' + t;
+                            var status = null;
+                            
+                            if (attendance[dateStr] && attendance[dateStr][sid] && attendance[dateStr][sid][key]) {
+                                status = attendance[dateStr][sid][key].status;
+                            }
+                            
+                            if (status === 'present') slot.classList.add('present');
+                            if (status === 'absent') slot.classList.add('absent');
+                            
+                            slot.textContent = student.grade + ' - ' + student.name;
+                            cell.appendChild(slot);
+                        }
+                    }
+                    
+                    grid.appendChild(cell);
+                }
+            }
+            
+            setTimeout(function() {
+                var slots = document.querySelectorAll('.student-slot');
+                for (var i = 0; i < slots.length; i++) {
+                    slots[i].addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var sid = parseInt(this.dataset.sid);
+                        var cell = this.parentElement;
+                        var day = cell.dataset.day;
+                        var timeIdx = parseInt(cell.dataset.time);
+                        toggleAttendance(sid, day, timeIdx);
+                    });
+                }
+                
+                var cells = document.querySelectorAll('.schedule-cell');
+                for (var i = 0; i < cells.length; i++) {
+                    cells[i].addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            var day = this.dataset.day;
+                            var timeIdx = parseInt(this.dataset.time);
+                            openAssignModal(day, timeIdx);
+                        }
+                    });
+                }
+            }, 0);
+        }
+        
+        function openAssignModal(day, timeIdx) {
+            currentSlot = { day: day, timeIdx: timeIdx };
+            var list = document.getElementById('checkboxList');
+            list.innerHTML = '';
+            
+            var current = schedule[day][timeIdx];
+            
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                var item = document.createElement('div');
+                item.className = 'checkbox-item';
+                var checked = current.indexOf(s.id) !== -1 ? 'checked' : '';
+                item.innerHTML = '<input type="checkbox" id="cb-' + s.id + '" value="' + s.id + '" ' + checked + '>' +
+                    '<label for="cb-' + s.id + '">' + s.grade + ' - ' + s.name + '</label>';
+                list.appendChild(item);
+            }
+            
+            document.getElementById('assignModal').classList.add('active');
+        }
+        
+        function assignStudents() {
+            if (!currentSlot) return;
+            
+            var checks = document.querySelectorAll('#checkboxList input:checked');
+            var ids = [];
+            for (var i = 0; i < checks.length; i++) {
+                ids.push(parseInt(checks[i].value));
+            }
+            
+            schedule[currentSlot.day][currentSlot.timeIdx] = ids;
+            
+            saveData();
+            renderSchedule();
+            closeModal('assignModal');
+        }
+        
+        function toggleAttendance(sid, day, timeIdx) {
+            var weekKey = getWeekKey();
+            
+            // Calculate the actual date for this day in the current week
+            var now = new Date();
+            now.setDate(now.getDate() + (currentWeek * 7));
+            var monday = new Date(now);
+            monday.setDate(now.getDate() - now.getDay() + 1);
+            
+            var dayIndex = daysEng.indexOf(day);
+            var actualDate = new Date(monday);
+            actualDate.setDate(monday.getDate() + dayIndex);
+            var dateStr = actualDate.toISOString().split('T')[0];
+            
+            if (!attendance[dateStr]) attendance[dateStr] = {};
+            if (!attendance[dateStr][sid]) attendance[dateStr][sid] = {};
+            
+            var key = day + '-' + timeIdx;
+            var current = attendance[dateStr][sid][key];
+            
+            var timeSlot = timeSlots[timeIdx].time;
+            
+            if (!current || current === 'absent') {
+                attendance[dateStr][sid][key] = {
+                    status: 'present',
+                    date: dateStr,
+                    time: timeSlot
+                };
+                checkNextActivity(sid, dateStr, timeSlot);
+            } else {
+                attendance[dateStr][sid][key] = {
+                    status: 'absent',
+                    date: dateStr,
+                    time: timeSlot
+                };
+            }
+            
+            saveData();
+            renderSchedule();
+        }
+        
+        function checkNextActivity(studentId, dateStr, timeSlot) {
+            var student = getStudentById(studentId);
+            if (!student) return;
+            
+            var plan = getPlanById(student.planId);
+            if (!plan || !plan.activities || plan.activities.length === 0) return;
+            
+            if (!studentProgress[studentId]) {
+                studentProgress[studentId] = {};
+            }
+            if (!studentProgress[studentId][student.planId]) {
+                studentProgress[studentId][student.planId] = [];
+            }
+            
+            var completed = studentProgress[studentId][student.planId];
+            
+            for (var i = 0; i < plan.activities.length; i++) {
+                var alreadyCompleted = false;
+                for (var j = 0; j < completed.length; j++) {
+                    if (completed[j].index === i) {
+                        alreadyCompleted = true;
+                        break;
+                    }
+                }
+                
+                if (!alreadyCompleted) {
+                    completed.push({
+                        index: i,
+                        date: dateStr,
+                        time: timeSlot
+                    });
+                    break;
+                }
+            }
+            
+            saveData();
+        }
+        
+        function saveData() {
+            var data = { students: students, schedule: schedule, attendance: attendance, plans: plans, studentProgress: studentProgress };
+            localStorage.setItem('electronicDiary', JSON.stringify(data));
+        }
+        
+        function loadData() {
+            var saved = localStorage.getItem('electronicDiary');
+            if (saved) {
+                var data = JSON.parse(saved);
+                if (data.students) students = data.students;
+                if (data.schedule) schedule = data.schedule;
+                if (data.attendance) attendance = data.attendance;
+                if (data.plans) plans = data.plans;
+                if (data.studentProgress) studentProgress = data.studentProgress;
+            }
+        }
+        
+        function exportData() {
+            var data = { students: students, schedule: schedule, attendance: attendance, plans: plans, studentProgress: studentProgress };
+            var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'diary_export_' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            alert('Експортирано!');
+        }
+        
+        function importData(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    var data = JSON.parse(event.target.result);
+                    if (data.students) students = data.students;
+                    if (data.schedule) schedule = data.schedule;
+                    if (data.attendance) attendance = data.attendance;
+                    if (data.plans) plans = data.plans;
+                    if (data.studentProgress) studentProgress = data.studentProgress;
+                    saveData();
+                    renderAll();
+                    alert('Импортирано успешно!');
+                } catch (err) {
+                    alert('Грешка при вчитување: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+        
+        function renderAll() {
+            renderStudentListSimple();
+            renderSchedule();
+            updateWeekDisplay();
+            renderPlansList();
+            updateStats();
+            updateProgressStudentList();
+        }
+        
+        function manualSave() {
+            saveData();
+            alert('Зачувано!');
+        }
+        
+        // Initialize
+        loadData();
+        renderAll();
+    </script>
+</body>
+</html>
