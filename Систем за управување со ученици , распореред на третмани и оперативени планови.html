@@ -298,10 +298,98 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
-    </style>
+         /* Dark Mode Toggle */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 50px;
+        }
+        .theme-switch input { display:none; }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 16px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 16px;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+            color: #e2e8f0;
+        }
+        body.dark-mode .header,
+        body.dark-mode .stat-box,
+        body.dark-mode .section-header {
+            background: linear-gradient(135deg, #4c51bf 0%, #2d3748 100%);
+        }
+        body.dark-mode .tabs { background: #2d3748; border-bottom-color: #4a5568; }
+        body.dark-mode .tab { background: #2d3748; color: #a0aec0; }
+        body.dark-mode .tab.active { background: #1a202c; color: #818cf8; border-bottom-color: #818cf8; }
+        body.dark-mode .content, body.dark-mode .student-list-simple { background: #1a202c; }
+        body.dark-mode .student-item { border-bottom-color: #4a5568; }
+        body.dark-mode .student-item:hover { background: #2d3748; }
+        body.dark-mode .student-item h4 { color: #e2e8f0; }
+        body.dark-mode .student-item p { color: #a0aec0; }
+        body.dark-mode .form-group select, body.dark-mode .form-group input, body.dark-mode .form-group textarea { background: #2d3748; border-color: #4a5568; color: #e2e8f0; }
+        body.dark-mode .progress-item { background: #2d3748; border-left-color: #718096; }
+        body.dark-mode .progress-item.completed { background: #2c5282; border-left-color: #63b3ed; }
+        body.dark-mode .attendance-table th { background: #4c51bf; }
+        body.dark-mode .attendance-table td { border-color: #4a5568; }
+        body.dark-mode .attendance-table tr:nth-child(even) { background: #2d3748; }
+        body.dark-mode .date-cell { background: #2c5282; }
+        body.dark-mode .schedule-grid { background: #4a5568; }
+        body.dark-mode .schedule-header { background: #4c51bf; }
+        body.dark-mode .schedule-time { background: #1a202c; }
+        body.dark-mode .schedule-cell { background: #2d3748; }
+        body.dark-mode .schedule-cell:hover { background: #4a5568; }
+        body.dark-mode .student-slot { background: #2c5282; border-left-color: #63b3ed; color: #e2e8f0; }
+        body.dark-mode .student-slot.present { background: rgba(72, 187, 120, 0.4); border-left-color: #48bb78; }
+        body.dark-mode .student-slot.absent { background: rgba(245, 101, 101, 0.4); border-left-color: #f56565; }
+        body.dark-mode .modal-content { background: #2d3748; }
+        body.dark-mode .checkbox-list { border-color: #4a5568; }
+        body.dark-mode .checkbox-item { background: #1a202c; }
+        body.dark-mode .week-nav { background: #2d3748; }
+        body.dark-mode div[style*="background: #f7fafc"] { background: #2d3748 !important; }
+   </style>
 </head>
 <body>
     <div class="header">
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider round"></div>
+            </label>
+        </div>
         <h1>📚 Електронски дневник</h1>
         <p>Кабинет за слух, говор, глас, алтернатива и аугментативна комуникација</p>
         <p>Систем за управување ученици со неделен распоред на третмани и напредокот во оперативниот план</p>
@@ -685,37 +773,47 @@
             }
             
             var completed = (studentProgress[studentId] && studentProgress[studentId][student.planId]) ? studentProgress[studentId][student.planId] : [];
+
+            completed.sort(function(a, b) {
+                var dateA = new Date(a.date + 'T' + a.time.split('-')[0] + ':00');
+                var dateB = new Date(b.date + 'T' + b.time.split('-')[0] + ':00');
+                return dateA - dateB;
+            });
             
-            for (var i = 0; i < plan.activities.length; i++) {
-                var activityData = null;
-                for (var j = 0; j < completed.length; j++) {
-                    if (completed[j].index === i) {
-                        activityData = completed[j];
-                        break;
-                    }
-                }
-                
-                var isCompleted = activityData !== null;
+            var completedIndices = new Set(completed.map(function(c) { return c.index; }));
+
+            // Render completed items first, in chronological order
+            completed.forEach(function(activityData) {
+                var i = activityData.index;
                 var item = document.createElement('div');
-                item.className = 'progress-item' + (isCompleted ? ' completed' : '');
+                item.className = 'progress-item completed';
                 
-                var timestampText = '';
-                if (isCompleted && activityData.date && activityData.time) {
-                    var dateParts = activityData.date.split('-');
-                    var formattedDate = dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0];
-                    timestampText = 'Завршено на: ' + formattedDate + ' ' + activityData.time;
-                } else if (isCompleted) {
-                    timestampText = 'Завршено';
-                } else {
-                    timestampText = 'Не е завршено';
-                }
-                
-                item.innerHTML = '<input type="checkbox" ' + (isCompleted ? 'checked' : '') + ' disabled>' +
+                var dateParts = activityData.date.split('-');
+                var formattedDate = dateParts[2] + '.' + dateParts[1] + '.' + dateParts[0];
+                var timestampText = 'Завршено на: ' + formattedDate + ' ' + activityData.time;
+
+                item.innerHTML = '<input type="checkbox" checked disabled>' +
                     '<div class="progress-item-content">' +
                     '<div class="progress-item-text">' + (i + 1) + '. ' + plan.activities[i] + '</div>' +
                     '<div class="progress-item-date">' + timestampText + '</div>' +
                     '</div>';
                 container.appendChild(item);
+            });
+
+            // Render uncompleted items
+            for (var i = 0; i < plan.activities.length; i++) {
+                if (!completedIndices.has(i)) {
+                    var item = document.createElement('div');
+                    item.className = 'progress-item';
+                    var timestampText = 'Не е завршено';
+
+                    item.innerHTML = '<input type="checkbox" disabled>' +
+                        '<div class="progress-item-content">' +
+                        '<div class="progress-item-text">' + (i + 1) + '. ' + plan.activities[i] + '</div>' +
+                        '<div class="progress-item-date">' + timestampText + '</div>' +
+                        '</div>';
+                    container.appendChild(item);
+                }
             }
         }
         
@@ -998,8 +1096,6 @@
         }
         
         function toggleAttendance(sid, day, timeIdx) {
-            var weekKey = getWeekKey();
-            
             // Calculate the actual date for this day in the current week
             var now = new Date();
             now.setDate(now.getDate() + (currentWeek * 7));
@@ -1016,28 +1112,46 @@
             
             var key = day + '-' + timeIdx;
             var current = attendance[dateStr][sid][key];
-            
             var timeSlot = timeSlots[timeIdx].time;
-            
-            if (!current || current === 'absent') {
-                attendance[dateStr][sid][key] = {
-                    status: 'present',
-                    date: dateStr,
-                    time: timeSlot
-                };
+
+            if (!current) {
+                // Unaddressed -> Present
+                attendance[dateStr][sid][key] = { status: 'present', date: dateStr, time: timeSlot };
                 checkNextActivity(sid, dateStr, timeSlot);
-            } else {
-                attendance[dateStr][sid][key] = {
-                    status: 'absent',
-                    date: dateStr,
-                    time: timeSlot
-                };
+            } else if (current.status === 'present') {
+                // Present -> Absent
+                attendance[dateStr][sid][key] = { status: 'absent', date: dateStr, time: timeSlot };
+                uncheckLastActivity(sid, dateStr, timeSlot);
+            } else if (current.status === 'absent') {
+                // Absent -> Unaddressed (reset)
+                delete attendance[dateStr][sid][key];
             }
             
             saveData();
             renderSchedule();
         }
         
+        function uncheckLastActivity(studentId, dateStr, timeSlot) {
+            var student = getStudentById(studentId);
+            if (!student) return;
+
+            var completed = (studentProgress[studentId] && studentProgress[studentId][student.planId]) ? studentProgress[studentId][student.planId] : [];
+            if (completed.length === 0) return;
+
+            // Find the specific activity completed on this date and time to remove it
+            let activityToRemoveIndex = -1;
+            for (let i = completed.length - 1; i >= 0; i--) {
+                if (completed[i].date === dateStr && completed[i].time === timeSlot) {
+                    activityToRemoveIndex = i;
+                    break;
+                }
+            }
+
+            if (activityToRemoveIndex > -1) {
+                completed.splice(activityToRemoveIndex, 1);
+            }
+        }
+
         function checkNextActivity(studentId, dateStr, timeSlot) {
             var student = getStudentById(studentId);
             if (!student) return;
@@ -1145,6 +1259,30 @@
         // Initialize
         loadData();
         renderAll();
+
+        // Dark Mode Logic
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme) {
+            document.body.classList.add(currentTheme);
+        
+            if (currentTheme === 'dark-mode') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light-mode');
+            }
+        }
+
+        toggleSwitch.addEventListener('change', switchTheme, false);
     </script>
 </body>
 </html>
