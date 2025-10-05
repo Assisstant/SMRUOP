@@ -16,31 +16,64 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 15px 20px;
-            text-align: center;
         }
         .header h1 { font-size: 1.3em; margin-bottom: 5px; }
         .header p { font-size: 0.85em; opacity: 0.95; }
         .tabs {
             display: flex;
-            background: white;
-            border-bottom: 2px solid #dee2e6;
+            justify-content: center;
+            background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 100%);
+            border-bottom: 3px solid #0f3460;
+            padding: 0 10px;
+            gap: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         .tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            background: white;
+            padding: 12px 30px;
             border: none;
-            font-size: 14px;
-            font-weight: 600;
+            background: linear-gradient(to bottom, #2d3748 0%, #1a202c 100%);
+            cursor: pointer;
             transition: all 0.3s;
-            color: #2d3748;
+            font-size: 15px;
+            color: #a0aec0;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+            margin-top: 5px;
+            border-top: 2px solid #4a5568;
+        }
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tab:hover {
+            background: linear-gradient(to bottom, #4a5568 0%, #2d3748 100%);
+            color: #e2e8f0;
+        }
+        .tab:hover::before {
+            opacity: 1;
         }
         .tab.active {
-            background: #f7fafc;
-            color: #667eea;
-            border-bottom: 3px solid #667eea;
+            background: linear-gradient(to bottom, #667eea 0%, #5568d3 100%);
+            color: #ffffff;
+            font-weight: bold;
+            margin-top: 0;
+            padding-top: 17px;
+            border-top: 3px solid #818cf8;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+        }
+        .tab.active::before {
+            opacity: 1;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
         }
         .content { 
             padding: 20px;
@@ -90,6 +123,58 @@
         }
         .stat-box h2 { font-size: 2.5em; margin-bottom: 5px; }
         .stat-box p { font-size: 0.9em; opacity: 0.95; }
+        
+        .capacity-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .capacity-box h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+            font-size: 1.1em;
+        }
+        .capacity-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .capacity-item .icon {
+            font-size: 18px;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: #e2e8f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .progress-bar-fill.green { background: linear-gradient(90deg, #48bb78 0%, #38a169 100%); }
+        .progress-bar-fill.yellow { background: linear-gradient(90deg, #ecc94b 0%, #d69e2e 100%); }
+        .progress-bar-fill.red { background: linear-gradient(90deg, #f56565 0%, #e53e3e 100%); }
+        
+        body.dark-mode .capacity-box { background: #2d3748; border-color: #4a5568; }
+        body.dark-mode .capacity-box h3 { color: #e2e8f0; }
+        body.dark-mode .capacity-item { color: #e2e8f0; }
+        body.dark-mode #sessionSummary { border-top-color: #4a5568; }
+        body.dark-mode #sessionSummary strong { color: #e2e8f0; }
+        body.dark-mode #sessionSummary .capacity-item span { color: #e2e8f0 !important; }
         .student-list-simple {
             background: white;
         }
@@ -209,6 +294,8 @@
             overflow: hidden;
             margin-top: 15px;
             border: 1px solid #f1f5f9;
+            min-width: 100%;
+            width: max-content;
         }
         .schedule-header {
             background: #667eea;
@@ -252,9 +339,44 @@
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             text-align: center;
-            min-height: 30px; /* Adjust height as needed */
+            min-height: 30px;
+            position: relative;
+        }
+        .student-slot-name {
+            flex: 1;
+            text-align: center;
+        }
+        .student-slot-order {
+            position: absolute;
+            left: 8px;
+            font-size: 11px;
+            background: rgba(0,0,0,0.1);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .student-slot.linked-first {
+            border-bottom: 2px dashed #38b2ac;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 0;
+        }
+        .student-slot.linked-second {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            margin-top: 0;
+        }
+        .student-slot.linked-first::after {
+            content: ' ↓';
+            margin-left: 5px;
+            font-size: 14px;
+        }
+        .student-slot.linked-second::before {
+            content: '↑ ';
+            margin-right: 5px;
+            font-size: 14px;
         }
         .student-slot.present { 
             background: rgba(72, 187, 120, 0.3); 
@@ -366,12 +488,25 @@
             background: linear-gradient(135deg, #4c51bf 0%, #2d3748 100%);
         }
         body.dark-mode .tabs { background: #2d3748; border-bottom-color: #4a5568; }
-        body.dark-mode .tab { background: #2d3748; color: #a0aec0; }
-        body.dark-mode .tab.active { background: #1a202c; color: #818cf8; border-bottom-color: #818cf8; }
+        body.dark-mode .tab { 
+            background: linear-gradient(to bottom, #1a202c 0%, #0f1419 100%); 
+            color: #718096;
+            border-top-color: #2d3748;
+        }
+        body.dark-mode .tab:hover {
+            background: linear-gradient(to bottom, #2d3748 0%, #1a202c 100%);
+            color: #cbd5e0;
+        }
+        body.dark-mode .tab.active { 
+            background: linear-gradient(to bottom, #818cf8 0%, #6366f1 100%);
+            color: #ffffff;
+            border-top-color: #a5b4fc;
+        }
         body.dark-mode .content, body.dark-mode .student-list-simple { background: #1a202c; }
         body.dark-mode .student-item { border-bottom-color: #4a5568; }
         body.dark-mode .student-item:hover { background: #2d3748; }
         body.dark-mode .student-item h4 { color: #e2e8f0; }
+        body.dark-mode .student-list-simple h3 { color: #e2e8f0; border-bottom-color: #818cf8; }
         body.dark-mode .student-item p { color: #a0aec0; }
         body.dark-mode .form-group select, body.dark-mode .form-group input, body.dark-mode .form-group textarea { background: #2d3748; border-color: #4a5568; color: #e2e8f0; }
         body.dark-mode .progress-item { background: #2d3748; border-left-color: #718096; }
@@ -386,14 +521,68 @@
         body.dark-mode .schedule-cell.odd-row { background: #1e293b; }
         body.dark-mode .schedule-cell:hover { background: #4a5568; }
         body.dark-mode .student-slot { background: #2c5282; border-left-color: #63b3ed; color: #e2e8f0; }
+        body.dark-mode .student-slot.linked-first { border-bottom-color: #63b3ed; }
         body.dark-mode .student-slot.present { background: rgba(72, 187, 120, 0.4); border-left-color: #48bb78; }
         body.dark-mode .student-slot.absent { background: rgba(245, 101, 101, 0.4); border-left-color: #f56565; }
+        body.dark-mode .student-slot-order { background: rgba(255,255,255,0.15); }
         body.dark-mode .modal-content { background: #2d3748; }
         body.dark-mode .checkbox-list { border-color: #4a5568; }
         body.dark-mode .checkbox-item { background: #1a202c; }
         body.dark-mode .week-nav { background: #2d3748; }
         body.dark-mode div[style*="background: #f7fafc"] { background: #2d3748 !important; }
 
+        .scrollable-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.1em; }
+            .header h2 { font-size: 0.8em; }
+            .header h4 { font-size: 0.7em; }
+
+            .tabs {
+                flex-direction: column;
+            }
+            .tab {
+                border-bottom: 1px solid #dee2e6;
+            }
+            .tab.active {
+                border-bottom: 3px solid #667eea;
+            }
+            body.dark-mode .tab {
+                border-bottom-color: #4a5568;
+            }
+            body.dark-mode .tab.active {
+                border-bottom-color: #818cf8;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            div[style*="grid-template-columns: 1fr 1fr"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .scrollable-container {
+                overflow-x: auto;
+            }
+
+            .schedule-grid {
+                min-width: 630px;
+            }
+            
+            .attendance-table {
+                min-width: 800px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+        }
    </style>
 </head>
 <body>
@@ -404,15 +593,19 @@
                 <div class="slider round"></div>
             </label>
         </div>
-        <h1>📚 Електронски дневник</h1>
-        <h2>Кабинет за слух, говор, глас, алтернатива и аугментативна комуникација</h2>
-        <h4>Систем за управување ученици со неделен распоред на третмани и напредокот во оперативниот план</h4>
+        <div style="text-align: center;">
+            <h1 style="font-size: 2.8em; margin: 10px 0; text-shadow: 0 4px 8px rgba(0,0,0,0.3); letter-spacing: 2px; font-weight: 700;">
+                📚 ЕЛЕКТРОНСКИ ДНЕВНИК
+            </h1>
+            <h2 style="font-size: 1.1em; margin: 8px 0; opacity: 0.95;">Кабинет за слух, говор, глас, алтернатива и аугментативна комуникација</h2>
+            <h4 style="font-size: 0.85em; margin: 8px 0; opacity: 0.85;">Систем за управување ученици со неделен распоред на третмани и напредокот во оперативниот план</h4>
+        </div>
     </div>
     
     <div class="tabs">
-        <button class="tab" onclick="switchTab('students')">Студенти</button>
-        <button class="tab" onclick="switchTab('schedule')">Распоред</button>
-        <button class="tab active" onclick="switchTab('progress')">Напредок</button>
+        <button class="tab" onclick="switchTab('students')">Ученици</button>
+        <button class="tab active" onclick="switchTab('schedule')">Распоред</button>
+        <button class="tab" onclick="switchTab('progress')">Напредок</button>
         <button class="tab" onclick="switchTab('plans')">Планови</button>
         <button class="tab" onclick="switchTab('data')">Податоци</button>
     </div>
@@ -420,24 +613,26 @@
     <div class="content">
         <!-- Students Tab -->
         <div id="students" class="tab-content">
-            <button class="btn btn-primary btn-full" onclick="showAddStudentModal()">+ Додади Студент</button>
-            
-            <div class="stats-row">
-                <div class="stat-box">
-                    <h2 id="totalStudents">0</h2>
-                    <p>Вкупно Студенти</p>
-                </div>
-                <div class="stat-box">
-                    <h2 id="weekSessions">0</h2>
-                    <p>Сесии Неделно</p>
-                </div>
-            </div>
+            <button class="btn btn-primary btn-full" onclick="showAddStudentModal()">+ Додади Ученик</button>
             
             <div id="studentListSimple" class="student-list-simple"></div>
+            
+            <div class="capacity-box">
+                <h3>📋 Искористеност на распоредот</h3>
+                <div class="capacity-item">
+                    <span class="icon">👤</span>
+                    <span id="capacityUsage">0/1000 мин | 0% искористено</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="capacityProgressBar" class="progress-bar-fill green" style="width: 0%;">0%</div>
+                </div>
+                <div id="capacityAlert"></div>
+                <div id="sessionSummary" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;"></div>
+            </div>
         </div>
         
         <!-- Schedule Tab -->
-        <div id="schedule" class="tab-content">
+        <div id="schedule" class="tab-content active">
             <div class="week-nav">
                 <button class="btn btn-primary" onclick="changeWeek(-1)">← Претходна</button>
                 <h3 id="weekDisplay"></h3>
@@ -445,11 +640,13 @@
             </div>
             <button class="btn btn-success" onclick="manualSave()">Зачувај</button>
             <button class="btn btn-primary" onclick="showMonthlyAttendance()">Избриши</button>
-            <div id="scheduleGrid"></div>
+            <div class="scrollable-container">
+                <div id="scheduleGrid"></div>
+            </div>
         </div>
         
         <!-- Progress Tab -->
-        <div id="progress" class="tab-content active">
+        <div id="progress" class="tab-content">
             <div class="section-header">Следење на Напредок</div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
@@ -472,7 +669,9 @@
                     <label>Избери месец:</label>
                     <input type="month" id="monthSelector" onchange="generateMonthlyAttendance()">
                 </div>
-                <div id="monthlyAttendanceTable"></div>
+                <div class="scrollable-container">
+                    <div id="monthlyAttendanceTable"></div>
+                </div>
             </div>
         </div>
         
@@ -536,7 +735,7 @@
     <!-- Assign Modal -->
     <div id="assignModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 15px;">Доделете Студенти</h2>
+            <h2 style="margin-bottom: 15px;">Доделете Ученици</h2>
             <div id="checkboxList" class="checkbox-list"></div>
             <div style="margin-top: 20px; display: flex; gap: 10px;">
                 <button class="btn btn-success" style="flex: 1;" onclick="assignStudents()">Зачувај</button>
@@ -560,8 +759,10 @@
         
         var currentWeek = 0;
         var editingStudent = null;
+        var editingPlan = null;
         var currentSlot = null;
         var isDataDirty = false;
+        var checkOrder = [];
         
         var days = ['Пон', 'Вто', 'Сре', 'Чет', 'Пет'];
         var daysEng = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -584,6 +785,7 @@
             document.getElementById(tab).classList.add('active');
             
             if (tab === 'students') updateStats();
+            if (tab === 'schedule') renderSchedule();
             if (tab === 'progress') updateProgressStudentList();
         }
         
@@ -595,8 +797,19 @@
         }
         
         function showAddPlanModal() {
+            editingPlan = null;
             document.getElementById('planName').value = '';
             document.getElementById('planActivities').value = '';
+            document.getElementById('addPlanModal').querySelector('h2').textContent = 'Креирај План';
+            document.getElementById('addPlanModal').classList.add('active');
+        }
+        
+        function editPlan(idx) {
+            editingPlan = idx;
+            var plan = plans[idx];
+            document.getElementById('planName').value = plan.name;
+            document.getElementById('planActivities').value = plan.activities.join('\n');
+            document.getElementById('addPlanModal').querySelector('h2').textContent = 'Измени План';
             document.getElementById('addPlanModal').classList.add('active');
         }
         
@@ -664,10 +877,20 @@
             }
             
             var activities = activitiesText.split('\n').map(function(a) { return a.trim(); }).filter(function(a) { return a.length > 0; });
-            plans.push({ id: Date.now(), name: name, activities: activities });
+            
+            if (editingPlan !== null) {
+                // Editing existing plan
+                plans[editingPlan].name = name;
+                plans[editingPlan].activities = activities;
+                editingPlan = null;
+            } else {
+                // Adding new plan
+                plans.push({ id: Date.now(), name: name, activities: activities });
+            }
             
             saveData();
             renderPlansList();
+            updatePlanDropdown();
             closeModal('addPlanModal');
         }
         
@@ -675,38 +898,68 @@
             var list = document.getElementById('studentListSimple');
             list.innerHTML = '';
             
+            // Add header with student count
+            if (students.length > 0) {
+                var header = document.createElement('h3');
+                header.style.cssText = 'margin: 20px 0 15px 0; padding-bottom: 10px; border-bottom: 2px solid #667eea; color: #2d3748; font-size: 18px;';
+                header.textContent = '📚 Ученици (' + students.length + ')';
+                list.appendChild(header);
+            }
+            
             for (var i = 0; i < students.length; i++) {
                 var s = students[i];
                 var plan = getPlanById(s.planId);
                 var completed = (studentProgress[s.id] && studentProgress[s.id][s.planId]) ? studentProgress[s.id][s.planId].length : 0;
                 var total = plan ? plan.activities.length : 0;
                 
-                // Count weekly sessions and determine duration for this student
-                var weekSessions = 0;
-                var durations = [];
+                // Count weekly sessions - two consecutive slots = one 40-min session
+                var sessions40min = 0;
+                var sessions20min = 0;
+                
                 for (var day in schedule) {
+                    var processedSlots = [];
                     for (var t = 0; t < schedule[day].length; t++) {
+                        if (processedSlots.indexOf(t) !== -1) continue; // Already counted
+                        
                         if (schedule[day][t].indexOf(s.id) !== -1) {
-                            weekSessions++;
-                            var numStudentsInSlot = schedule[day][t].length;
-                            durations.push(numStudentsInSlot > 1 ? 20 : 40);
+                            // Check if student is also in the next consecutive slot
+                            var isInNextSlot = (t + 1 < schedule[day].length && 
+                                schedule[day][t + 1].indexOf(s.id) !== -1);
+                            
+                            // Check if previous slot was already processed (we're the second half)
+                            var isPreviousProcessed = processedSlots.indexOf(t - 1) !== -1;
+                            
+                            if (isInNextSlot && !isPreviousProcessed) {
+                                // Two consecutive slots = 1 session of 40 min (2x20 or 1x40)
+                                sessions40min++;
+                                processedSlots.push(t, t + 1); // Mark both as processed
+                            } else if (!isPreviousProcessed) {
+                                // Single slot
+                                var numStudentsInSlot = schedule[day][t].length;
+                                if (numStudentsInSlot === 1) {
+                                    // Alone = 40 min
+                                    sessions40min++;
+                                } else {
+                                    // With others = 20 min
+                                    sessions20min++;
+                                }
+                                processedSlots.push(t);
+                            }
+                            // If isPreviousProcessed is true, do nothing (already counted)
                         }
                     }
                 }
 
-                // Find the most common duration
-                var duration = 40; // Default
-                if (durations.length > 0) {
-                    var counts = durations.reduce((acc, val) => acc.set(val, (acc.get(val) || 0) + 1), new Map());
-                    duration = [...counts.entries()].reduce((a, e) => e[1] > a[1] ? e : a)[0];
-                }
-
+                // Calculate total sessions for display
+                var totalSessions = sessions40min + sessions20min;
+                var sessionDisplay = totalSessions > 0 ? totalSessions + ' сесии неделно' : 'Нема сесии';
+                
                 var item = document.createElement('div');
                 item.className = 'student-item';
                 item.innerHTML = '<div class="student-item-info">' +
-                    '<h4>' + s.grade + ' - ' + s.name + '</h4>' +
-                    '<p>План: ' + (plan ? plan.name : 'N/A') + ' | Активности: ' + completed + '/' + total + '</p>' +
-                    '<p style="font-size: 12px; color: #667eea; margin-top: 2px;">Сесии неделно: ' + weekSessions + ' | Времетраење: ' + duration + ' мин</p>' +
+                    '<h4><span style="color: #667eea; font-weight: bold; margin-right: 8px;">' + (i + 1) + '.</span>' + 
+                    s.grade + ' - ' + s.name + '</h4>' +
+                    '<p>План: ' + (plan ? plan.name : 'N/A') + ' | ' + sessionDisplay + '</p>' +
                     '</div>' +
                     '<div class="student-item-actions">' +
                     '<button class="btn btn-primary" style="padding: 8px 15px;" onclick="editStudent(' + i + ')">Измени</button>' +
@@ -727,7 +980,7 @@
         }
         
         function deleteStudent(idx) {
-            if (!confirm('Избриши го студентот?')) return;
+            if (!confirm('Избриши го ученикот?')) return;
             
             var studentId = students[idx].id;
             students.splice(idx, 1);
@@ -749,14 +1002,181 @@
         }
         
         function updateStats() {
-            document.getElementById('totalStudents').textContent = students.length;
-            var totalSessions = 0;
+            var totalSlotsUsed = 0; // Count occupied hours (each hour = 2 slots)
+            
+            // Count occupied hours: if ANY student is in that hour, it's occupied = 2 slots
             for (var day in schedule) {
                 for (var i = 0; i < schedule[day].length; i++) {
-                    totalSessions += schedule[day][i].length;
+                    if (schedule[day][i].length > 0) {
+                        // This hour is occupied (regardless of number of students)
+                        totalSlotsUsed += 2;
+                    }
                 }
             }
-            document.getElementById('weekSessions').textContent = totalSessions;
+            
+            // Calculate capacity in 20-min slots: 5 days × 5 hours × 2 halves = 50 slots
+            var maxSlots = 50;
+            var totalMinutesUsed = totalSlotsUsed * 20;
+            var maxCapacity = maxSlots * 20; // 1000 minutes
+            var percentUsed = maxCapacity > 0 ? (totalMinutesUsed / maxCapacity * 100).toFixed(1) : 0;
+            var availableMinutes = maxCapacity - totalMinutesUsed;
+            
+            // Update capacity display
+            document.getElementById('capacityUsage').textContent = 
+                totalMinutesUsed + '/' + maxCapacity + ' мин | ' + percentUsed + '% искористено';
+            
+            // Update progress bar
+            var progressBar = document.getElementById('capacityProgressBar');
+            progressBar.style.width = percentUsed + '%';
+            progressBar.textContent = percentUsed + '%';
+            
+            // Set color based on usage
+            progressBar.className = 'progress-bar-fill';
+            if (percentUsed >= 100) {
+                progressBar.classList.add('red');
+            } else if (percentUsed >= 80) {
+                progressBar.classList.add('yellow');
+            } else {
+                progressBar.classList.add('green');
+            }
+            
+            // Update alert message and find free slots
+            var alertDiv = document.getElementById('capacityAlert');
+            alertDiv.innerHTML = '';
+            
+            // Find free time slots
+            var freeSlots = [];
+            for (var day in schedule) {
+                for (var i = 0; i < schedule[day].length; i++) {
+                    if (schedule[day][i].length === 0) {
+                        var dayName = days[daysEng.indexOf(day)];
+                        var timeLabel = timeSlots[i].label + ' (' + timeSlots[i].time + ')';
+                        freeSlots.push(dayName + ' - Час ' + timeLabel);
+                    }
+                }
+            }
+            
+            if (percentUsed >= 100) {
+                var item = document.createElement('div');
+                item.className = 'capacity-item';
+                item.style.color = '#e53e3e';
+                item.innerHTML = '<span class="icon">⚠️</span><span><strong>Нема слободни термини!</strong></span>';
+                alertDiv.appendChild(item);
+            } else if (percentUsed >= 80) {
+                var available40 = Math.floor(availableMinutes / 40);
+                var available20 = Math.floor(availableMinutes / 20);
+                var item = document.createElement('div');
+                item.className = 'capacity-item';
+                item.style.color = '#d69e2e';
+                item.innerHTML = '<span class="icon">🧡</span><span>' + availableMinutes + ' мин слободни (' + 
+                    available20 + ' слота)</span>';
+                alertDiv.appendChild(item);
+                
+                // Show free slots
+                if (freeSlots.length > 0) {
+                    var freeItem = document.createElement('div');
+                    freeItem.style.cssText = 'margin-top: 10px; padding: 10px; background: rgba(237, 137, 54, 0.1); border-radius: 5px; font-size: 13px;';
+                    freeItem.innerHTML = '<strong>📅 Слободни термини:</strong><br>' + freeSlots.join('<br>');
+                    alertDiv.appendChild(freeItem);
+                }
+            } else {
+                var available40 = Math.floor(availableMinutes / 40);
+                var available20 = Math.floor(availableMinutes / 20);
+                var item = document.createElement('div');
+                item.className = 'capacity-item';
+                item.style.color = '#38a169';
+                item.innerHTML = '<span class="icon">💚</span><span>' + availableMinutes + ' мин слободни (' + 
+                    available20 + ' слота)</span>';
+                alertDiv.appendChild(item);
+                
+                // Show free slots
+                if (freeSlots.length > 0) {
+                    var freeItem = document.createElement('div');
+                    freeItem.style.cssText = 'margin-top: 10px; padding: 10px; background: rgba(72, 187, 120, 0.1); border-radius: 5px; font-size: 13px;';
+                    freeItem.innerHTML = '<strong>📅 Слободни термини:</strong><br>' + freeSlots.join('<br>');
+                    alertDiv.appendChild(freeItem);
+                }
+            }
+            
+            // Generate session summary for all students
+            var sessionStats = {}; // Format: "2x40" -> {count: N, students: [names]}
+            
+            for (var i = 0; i < students.length; i++) {
+                var s = students[i];
+                var sessions40 = 0;
+                var sessions20 = 0;
+                
+                // Count sessions for this student (same logic as renderStudentListSimple)
+                for (var day in schedule) {
+                    var processedSlots = [];
+                    for (var t = 0; t < schedule[day].length; t++) {
+                        if (processedSlots.indexOf(t) !== -1) continue;
+                        
+                        if (schedule[day][t].indexOf(s.id) !== -1) {
+                            var isInNextSlot = (t + 1 < schedule[day].length && 
+                                schedule[day][t + 1].indexOf(s.id) !== -1);
+                            var isPreviousProcessed = processedSlots.indexOf(t - 1) !== -1;
+                            
+                            if (isInNextSlot && !isPreviousProcessed) {
+                                sessions40++;
+                                processedSlots.push(t, t + 1);
+                            } else if (!isPreviousProcessed) {
+                                var numStudentsInSlot = schedule[day][t].length;
+                                if (numStudentsInSlot === 1) {
+                                    sessions40++;
+                                } else {
+                                    sessions20++;
+                                }
+                                processedSlots.push(t);
+                            }
+                        }
+                    }
+                }
+                
+                // Create key like "2x40+1x20" or "2x40" or "1x20"
+                var key = '';
+                if (sessions40 > 0) key += sessions40 + 'x40';
+                if (sessions20 > 0) {
+                    if (key.length > 0) key += '+';
+                    key += sessions20 + 'x20';
+                }
+                if (key.length === 0) key = '0';
+                
+                if (!sessionStats[key]) {
+                    sessionStats[key] = {count: 0, students: []};
+                }
+                sessionStats[key].count++;
+                sessionStats[key].students.push(s.name);
+            }
+            
+            // Display session summary
+            var summaryDiv = document.getElementById('sessionSummary');
+            summaryDiv.innerHTML = '<strong style="font-size: 14px; display: block; margin-bottom: 10px;">📊 Распределба на сесии:</strong>';
+            
+            var sortedKeys = Object.keys(sessionStats).sort();
+            for (var i = 0; i < sortedKeys.length; i++) {
+                var key = sortedKeys[i];
+                var data = sessionStats[key];
+                var count = data.count;
+                var studentNames = data.students;
+                
+                if (key === '0') {
+                    summaryDiv.innerHTML += '<div class="capacity-item" style="margin: 5px 0; font-size: 13px;">' +
+                        '<span style="color: #718096;">• ' + count + ' ученици без распоред: ' + studentNames.join(', ') + '</span></div>';
+                } else {
+                    // Format key nicely: "2x40+1x20" -> "2 сесии по 40 мин + 1 сесија по 20 мин"
+                    var formatted = key.replace(/(\d+)x40/g, function(match, num) {
+                        return num + (num == 1 ? ' сесија' : ' сесии') + ' по 40 мин';
+                    }).replace(/(\d+)x20/g, function(match, num) {
+                        return num + (num == 1 ? ' сесија' : ' сесии') + ' по 20 мин';
+                    }).replace('+', ' + ');
+                    
+                    var studentWord = count == 1 ? 'ученик' : 'ученици';
+                    summaryDiv.innerHTML += '<div class="capacity-item" style="margin: 5px 0; font-size: 13px;">' +
+                        '<span style="color: #2d3748;"><strong>• ' + count + ' ' + studentWord + ' со ' + formatted + ':</strong><br>' +
+                        '<span style="font-size: 12px; color: #4a5568; margin-left: 12px;">' + studentNames.join(', ') + '</span></span></div>';
+                }
+            }
         }
         
         function updateProgressStudentList() {
@@ -878,7 +1298,7 @@
             
             var container = document.getElementById('monthlyAttendanceTable');
             var html = '<table class="attendance-table">';
-            html += '<tr><th>Студент</th><th>План</th>';
+            html += '<tr><th>Ученик</th><th>План</th>';
             
             // Get all dates in month
             var lastDay = new Date(year, month, 0).getDate();
@@ -924,7 +1344,10 @@
                 var div = document.createElement('div');
                 div.style.cssText = 'background: #f7fafc; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #667eea;';
                 div.innerHTML = '<h4 style="margin-bottom: 10px;">' + p.name + ' (' + p.activities.length + ' активности)</h4>' +
-                    '<button class="btn btn-danger" onclick="deletePlan(' + i + ')">Избриши</button>';
+                    '<div style="display: flex; gap: 10px;">' +
+                    '<button class="btn btn-primary" onclick="editPlan(' + i + ')">Измени</button>' +
+                    '<button class="btn btn-danger" onclick="deletePlan(' + i + ')">Избриши</button>' +
+                    '</div>';
                 container.appendChild(div);
             }
         }
@@ -1029,6 +1452,31 @@
                             var slot = document.createElement('div');
                             slot.className = 'student-slot';
                             slot.dataset.sid = sid;
+                            slot.dataset.day = day;
+                            slot.dataset.time = t;
+                            slot.dataset.position = s;
+                            
+                            // Check if this is a linked session (student alone in consecutive slots)
+                            var isLinkedFirst = false;
+                            var isLinkedSecond = false;
+                            
+                            if (studentIds.length === 1) { // Student is alone in current slot
+                                // Check if next slot also has only this student (linked first)
+                                if (t + 1 < timeSlots.length && 
+                                    schedule[day][t + 1].length === 1 && 
+                                    schedule[day][t + 1][0] === sid) {
+                                    isLinkedFirst = true;
+                                }
+                                // Check if previous slot had only this student (linked second)
+                                if (t - 1 >= 0 && 
+                                    schedule[day][t - 1].length === 1 && 
+                                    schedule[day][t - 1][0] === sid) {
+                                    isLinkedSecond = true;
+                                }
+                            }
+                            
+                            if (isLinkedFirst) slot.classList.add('linked-first');
+                            if (isLinkedSecond) slot.classList.add('linked-second');
                             
                             var key = day + '-' + t;
                             var status = null;
@@ -1040,7 +1488,13 @@
                             if (status === 'present') slot.classList.add('present');
                             if (status === 'absent') slot.classList.add('absent');
                             
-                            slot.textContent = student.grade + ' - ' + student.name;
+                            // Build slot content with order indicator (no reorder buttons)
+                            var orderLabel = '';
+                            if (studentIds.length > 1) {
+                                orderLabel = '<span class="student-slot-order">' + (s + 1) + '/' + studentIds.length + '</span>';
+                            }
+                            
+                            slot.innerHTML = orderLabel + '<span class="student-slot-name">' + student.grade + ' - ' + student.name + '</span>';
                             cell.appendChild(slot);
                         }
                     }
@@ -1055,9 +1509,8 @@
                     slots[i].addEventListener('click', function(e) {
                         e.stopPropagation();
                         var sid = parseInt(this.dataset.sid);
-                        var cell = this.parentElement;
-                        var day = cell.dataset.day;
-                        var timeIdx = parseInt(cell.dataset.time);
+                        var day = this.dataset.day;
+                        var timeIdx = parseInt(this.dataset.time);
                         toggleAttendance(sid, day, timeIdx);
                     });
                 }
@@ -1081,6 +1534,7 @@
             list.innerHTML = '';
             
             var current = schedule[day][timeIdx];
+            checkOrder = current.slice(); // Copy current order
             
             for (var i = 0; i < students.length; i++) {
                 var s = students[i];
@@ -1092,22 +1546,41 @@
                 list.appendChild(item);
             }
             
+            // Add event listeners to track check order
+            setTimeout(function() {
+                var checkboxes = document.querySelectorAll('#checkboxList input[type="checkbox"]');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    checkboxes[i].addEventListener('change', function() {
+                        var id = parseInt(this.value);
+                        if (this.checked) {
+                            // Add to order if not already there
+                            if (checkOrder.indexOf(id) === -1) {
+                                checkOrder.push(id);
+                            }
+                        } else {
+                            // Remove from order
+                            var idx = checkOrder.indexOf(id);
+                            if (idx !== -1) {
+                                checkOrder.splice(idx, 1);
+                            }
+                        }
+                    });
+                }
+            }, 0);
+            
             document.getElementById('assignModal').classList.add('active');
         }
         
         function assignStudents() {
             if (!currentSlot) return;
             
-            var checks = document.querySelectorAll('#checkboxList input:checked');
-            var ids = [];
-            for (var i = 0; i < checks.length; i++) {
-                ids.push(parseInt(checks[i].value));
-            }
-            
-            schedule[currentSlot.day][currentSlot.timeIdx] = ids;
+            // Use checkOrder instead of DOM order
+            schedule[currentSlot.day][currentSlot.timeIdx] = checkOrder.slice();
             
             saveData();
             renderSchedule();
+            renderStudentListSimple();
+            updateStats();
             closeModal('assignModal');
         }
         
