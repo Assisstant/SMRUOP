@@ -405,8 +405,8 @@
             </label>
         </div>
         <h1>📚 Електронски дневник</h1>
-        <p>Кабинет за слух, говор, глас, алтернатива и аугментативна комуникација</p>
-        <p>Систем за управување ученици со неделен распоред на третмани и напредокот во оперативниот план</p>
+        <h2>Кабинет за слух, говор, глас, алтернатива и аугментативна комуникација</h2>
+        <h4>Систем за управување ученици со неделен распоред на третмани и напредокот во оперативниот план</h4>
     </div>
     
     <div class="tabs">
@@ -453,15 +453,15 @@
             <div class="section-header">Следење на Напредок</div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <button class="btn btn-primary btn-full" onclick="switchProgressView('student')">По Студент</button>
-                <button class="btn btn-success btn-full" onclick="switchProgressView('monthly')">Месечен</button>
+                <button class="btn btn-primary btn-full" onclick="switchProgressView('student')">Реализација на оперативен план</button>
+                <button class="btn btn-success btn-full" onclick="switchProgressView('monthly')">Присутност по месец</button>
             </div>
             
             <div id="studentProgressView">
                 <div class="form-group">
-                    <label>Избери Студент:</label>
+                    <label>Избери Ученик:</label>
                     <select id="progressStudentSelect" onchange="loadStudentProgress()">
-                        <option value="">-- Избери студент --</option>
+                        <option value="">-- Избери ученик --</option>
                     </select>
                 </div>
                 <div id="progressActivitiesList" class="progress-list"></div>
@@ -494,7 +494,7 @@
     <!-- Add Student Modal -->
     <div id="addStudentModal" class="modal">
         <div class="modal-content">
-            <h2 style="margin-bottom: 15px;">Додади Студент</h2>
+            <h2 style="margin-bottom: 15px;">Додади Ученик</h2>
             <div class="form-group">
                 <label>Име и Презиме</label>
                 <input type="text" id="studentName" placeholder="пр. Марија Чадамова">
@@ -761,7 +761,7 @@
         
         function updateProgressStudentList() {
             var select = document.getElementById('progressStudentSelect');
-            select.innerHTML = '<option value="">-- Избери студент --</option>';
+            select.innerHTML = '<option value="">-- Избери ученик --</option>';
             
             for (var i = 0; i < students.length; i++) {
                 var opt = document.createElement('option');
@@ -783,7 +783,7 @@
             
             var plan = getPlanById(student.planId);
             if (!plan) {
-                container.innerHTML = '<p>Студентот нема доделен план</p>';
+                container.innerHTML = '<p>Ученикот нема доделен план</p>';
                 return;
             }
             
