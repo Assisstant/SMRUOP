@@ -190,10 +190,10 @@
         }
         .attendance-table td {
             padding: 10px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #f1f5f9;
         }
         .attendance-table tr:nth-child(even) {
-            background: #f7fafc;
+            background: #f8fafc;
         }
         .date-cell {
             background: #e6fffa;
@@ -204,10 +204,11 @@
             display: grid;
             grid-template-columns: 80px repeat(5, 1fr);
             gap: 1px;
-            background: #e2e8f0;
+            background: #f1f5f9; /* Grid line color */
             border-radius: 8px;
             overflow: hidden;
             margin-top: 15px;
+            border: 1px solid #f1f5f9;
         }
         .schedule-header {
             background: #667eea;
@@ -218,11 +219,11 @@
             font-size: 12px;
         }
         .schedule-time {
-            background: #2d3748;
+            background: #000;
             color: white;
             padding: 10px 5px;
             text-align: center;
-            font-size: 11px;
+            font-size: 17px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -232,6 +233,12 @@
             padding: 8px 4px;
             min-height: 80px;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .schedule-cell.odd-row {
+            background: #f8fafc;
         }
         .schedule-cell:hover { background: #edf2f7; }
         .student-slot {
@@ -239,9 +246,15 @@
             padding: 6px;
             border-radius: 4px;
             margin: 3px 0;
-            font-size: 11px;
+            font-size: 17px;
+            font-weight: bold;
             border-left: 3px solid #38b2ac;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 30px; /* Adjust height as needed */
         }
         .student-slot.present { 
             background: rgba(72, 187, 120, 0.3); 
@@ -364,13 +377,13 @@
         body.dark-mode .progress-item { background: #2d3748; border-left-color: #718096; }
         body.dark-mode .progress-item.completed { background: #2c5282; border-left-color: #63b3ed; }
         body.dark-mode .attendance-table th { background: #4c51bf; }
-        body.dark-mode .attendance-table td { border-color: #4a5568; }
-        body.dark-mode .attendance-table tr:nth-child(even) { background: #2d3748; }
+        body.dark-mode .attendance-table td { border-color: #334155; }
+        body.dark-mode .attendance-table tr:nth-child(even) { background: #1e293b; }
         body.dark-mode .date-cell { background: #2c5282; }
-        body.dark-mode .schedule-grid { background: #4a5568; }
+        body.dark-mode .schedule-grid { background: #334155; border-color: #334155; } /* Grid line color */
         body.dark-mode .schedule-header { background: #4c51bf; }
-        body.dark-mode .schedule-time { background: #1a202c; }
-        body.dark-mode .schedule-cell { background: #2d3748; }
+        body.dark-mode .schedule-cell { background: #0f172a; }
+        body.dark-mode .schedule-cell.odd-row { background: #1e293b; }
         body.dark-mode .schedule-cell:hover { background: #4a5568; }
         body.dark-mode .student-slot { background: #2c5282; border-left-color: #63b3ed; color: #e2e8f0; }
         body.dark-mode .student-slot.present { background: rgba(72, 187, 120, 0.4); border-left-color: #48bb78; }
@@ -380,6 +393,7 @@
         body.dark-mode .checkbox-item { background: #1a202c; }
         body.dark-mode .week-nav { background: #2d3748; }
         body.dark-mode div[style*="background: #f7fafc"] { background: #2d3748 !important; }
+
    </style>
 </head>
 <body>
@@ -493,14 +507,6 @@
                 <label>План</label>
                 <select id="studentPlan"></select>
             </div>
-            <div class="form-group">
-                <label>Времетраење на сесија (минути)</label>
-                <select id="studentDuration">
-                    <option value="20">20 минути</option>
-                    <option value="40" selected>40 минути</option>
-                    <option value="60">60 минути</option>
-                </select>
-            </div>
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-success" style="flex: 1;" onclick="saveStudent()">Зачувај</button>
                 <button class="btn" style="flex: 1; background: #718096; color: white;" onclick="closeModal('addStudentModal')">Откажи</button>
@@ -555,6 +561,7 @@
         var currentWeek = 0;
         var editingStudent = null;
         var currentSlot = null;
+        var isDataDirty = false;
         
         var days = ['Пон', 'Вто', 'Сре', 'Чет', 'Пет'];
         var daysEng = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
@@ -620,23 +627,21 @@
             var name = document.getElementById('studentName').value.trim();
             var grade = document.getElementById('studentGrade').value.trim();
             var planId = parseInt(document.getElementById('studentPlan').value);
-            var duration = parseInt(document.getElementById('studentDuration').value);
-            
+
             if (!name || !grade || !planId) {
                 alert('Пополнете ги сите полиња');
                 return;
             }
-            
+
             if (editingStudent !== null) {
                 // Editing existing student
                 students[editingStudent].name = name;
                 students[editingStudent].grade = grade;
                 students[editingStudent].planId = planId;
-                students[editingStudent].duration = duration;
                 editingStudent = null;
             } else {
                 // Adding new student
-                var newStudent = { id: Date.now(), name: name, grade: grade, planId: planId, duration: duration };
+                var newStudent = { id: Date.now(), name: name, grade: grade, planId: planId };
                 students.push(newStudent);
                 studentProgress[newStudent.id] = {};
                 studentProgress[newStudent.id][planId] = [];
@@ -676,22 +681,32 @@
                 var completed = (studentProgress[s.id] && studentProgress[s.id][s.planId]) ? studentProgress[s.id][s.planId].length : 0;
                 var total = plan ? plan.activities.length : 0;
                 
-                // Count weekly sessions for this student
+                // Count weekly sessions and determine duration for this student
                 var weekSessions = 0;
+                var durations = [];
                 for (var day in schedule) {
                     for (var t = 0; t < schedule[day].length; t++) {
                         if (schedule[day][t].indexOf(s.id) !== -1) {
                             weekSessions++;
+                            var numStudentsInSlot = schedule[day][t].length;
+                            durations.push(numStudentsInSlot > 1 ? 20 : 40);
                         }
                     }
                 }
-                
+
+                // Find the most common duration
+                var duration = 40; // Default
+                if (durations.length > 0) {
+                    var counts = durations.reduce((acc, val) => acc.set(val, (acc.get(val) || 0) + 1), new Map());
+                    duration = [...counts.entries()].reduce((a, e) => e[1] > a[1] ? e : a)[0];
+                }
+
                 var item = document.createElement('div');
                 item.className = 'student-item';
                 item.innerHTML = '<div class="student-item-info">' +
                     '<h4>' + s.grade + ' - ' + s.name + '</h4>' +
                     '<p>План: ' + (plan ? plan.name : 'N/A') + ' | Активности: ' + completed + '/' + total + '</p>' +
-                    '<p style="font-size: 12px; color: #667eea; margin-top: 2px;">Сесии неделно: ' + weekSessions + ' | Времетраење: ' + (s.duration || 40) + ' мин</p>' +
+                    '<p style="font-size: 12px; color: #667eea; margin-top: 2px;">Сесии неделно: ' + weekSessions + ' | Времетраење: ' + duration + ' мин</p>' +
                     '</div>' +
                     '<div class="student-item-actions">' +
                     '<button class="btn btn-primary" style="padding: 8px 15px;" onclick="editStudent(' + i + ')">Измени</button>' +
@@ -996,6 +1011,7 @@
                     var day = daysEng[d];
                     var cell = document.createElement('div');
                     cell.className = 'schedule-cell';
+                    if (t % 2 === 0) { cell.classList.add('odd-row'); }
                     cell.dataset.day = day;
                     cell.dataset.time = t;
                     
@@ -1193,6 +1209,7 @@
         function saveData() {
             var data = { students: students, schedule: schedule, attendance: attendance, plans: plans, studentProgress: studentProgress };
             localStorage.setItem('electronicDiary', JSON.stringify(data));
+            isDataDirty = true;
         }
         
         function loadData() {
@@ -1205,6 +1222,7 @@
                 if (data.plans) plans = data.plans;
                 if (data.studentProgress) studentProgress = data.studentProgress;
             }
+            isDataDirty = false;
         }
         
         function exportData() {
@@ -1215,6 +1233,7 @@
             a.href = url;
             a.download = 'diary_export_' + new Date().toISOString().split('T')[0] + '.json';
             a.click();
+            isDataDirty = false; // Data is now considered 'saved'
             alert('Експортирано!');
         }
         
@@ -1283,6 +1302,14 @@
         }
 
         toggleSwitch.addEventListener('change', switchTheme, false);
+
+        // Warn user about unsaved changes
+        window.addEventListener('beforeunload', function (e) {
+            if (isDataDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
     </script>
 </body>
 </html>
